@@ -18,9 +18,56 @@ function App() {
     }
   }
 
+  const handleDelete = () => {
+    
+  }
+
   return (
-    <div className="App">
-  
+    <div className="container">
+      {user ? (
+        <div className="home">
+          <span>
+            Welcome to the <b>{user.isAdmin ? "admin" : "user"}</b> dashboard{" "}
+            <b>{user.username}</b>.
+          </span>
+          <span>Delete Users:</span>
+          <button className="deleteButton" onClick={() => handleDelete(1)}>
+            Delete John
+          </button>
+          <button className="deleteButton" onClick={() => handleDelete(2)}>
+            Delete Jane
+          </button>
+          {error && (
+            <span className="error">
+              You are not allowed to delete this user!
+            </span>
+          )}
+          {success && (
+            <span className="success">
+              User has been deleted successfully...
+            </span>
+          )}
+        </div>
+      ) : (
+        <div className="login">
+          <form onSubmit={handleSubmit}>
+            <span className="formTitle">Lama Login</span>
+            <input
+              type="text"
+              placeholder="username"
+              onChange={(e) => setUsername(e.target.value)}
+            />
+            <input
+              type="password"
+              placeholder="password"
+              onChange={(e) => setPassword(e.target.value)}
+            />
+            <button type="submit" className="submitButton">
+              Login
+            </button>
+          </form>
+        </div>
+      )}
     </div>
   );
 }
