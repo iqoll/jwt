@@ -11,15 +11,28 @@ function App() {
   const [success, setSuccess] = useState(false)
 
   const handleSubmit = async (e) => {
+    e.preventDefault()
     try {
-      // Api request
+      const res = await axios.post('/login', {username, password})
+      setUser(res.data)
     } catch (error) {
       console.log(error)
     }
   }
 
-  const handleDelete = () => {
-    
+  const handleDelete = async (id) => {
+    setSuccess(false)
+    setError(false)
+    try {
+      await axios.delete(`/users/${id}`, {
+        headers: {
+          authorization: "Bearer " + user.accessToken
+        }
+      })
+      setSuccess(true)
+    } catch (error) {
+      setError(true)
+    }
   }
 
   return (
