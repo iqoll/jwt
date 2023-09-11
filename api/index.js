@@ -112,6 +112,11 @@ app.delete('/api/users/:userId', verify, (req,res) => {
   }
 })
 
+app.post('/api/logout', verify, (req, res) => {
+  const refreshToken = req.body.token
+  refreshTokens = refreshTokens.filter(token => token !== refreshToken)
+  res.status(200).json('Log out succesful')
+})
 app.listen(5000, () => {
   console.log("Backend server is running!")
 })
