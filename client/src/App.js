@@ -10,7 +10,38 @@ function App() {
   const [error, setError] = useState(false)
   const [success, setSuccess] = useState(false)
 
-  const handleSubmit = async (e) => {
+  const refreshToken = async () => {
+    try {
+      const res = await axios.post('/refresh', { token: user.refreshToken })
+      setUser({
+        ...user,
+        accessToken: res.data.accessToken,
+        refreshToken: res.data.refreshToken
+      })
+      return res.data
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  const axiosJWT = axios.create()
+
+  // Do this before every request
+  axiosJWT.interceptors.request.use(
+    // Check expiration date for accessToken
+    async (config) => {
+      let currentDate = new Date()
+      const decodedToken = jwt_decode(user.accessToken)
+      if(decodedToken.exp * 1000 < currentDate.getTime()) {
+      const data = await refreshToken()
+      config.headers["authorization"] = "Bearer " + data.accessToken
+      }
+      return config
+    }, (err) => {
+      return Promise.reject(err)
+    })
+    
+    const handleSubmit = async (e) => {
     e.preventDefault()
     try {
       const res = await axios.post('/login', {username, password})
@@ -20,11 +51,11 @@ function App() {
     }
   }
 
-  const handleDelete = async (id) => {
+  const handleDelete = async (id) => {  
     setSuccess(false)
     setError(false)
     try {
-      await axios.delete(`/users/${id}`, {
+      await axiosJWT.delete(`/users/${id}`, {
         headers: {
           authorization: "Bearer " + user.accessToken
         }
